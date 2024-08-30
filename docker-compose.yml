@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  migrate-road:
+    image: migrate/migrate
+    networks: 
+      - book
+    volumes:
+      - ./migrations:/migrations
+    command: [ "-path", "/migrations", "-database", "postgres://postgres:1111@postgres-book:5432/bookshop?sslmode=disable", "up" ]
+    depends_on:
+      - postgres-book
+
+  postgres-book:
+    container_name: postgres-book
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1111
+      PGDATA: /data/postgres
+      POSTGRES_DB: bookshop
+    volumes:
+     - book_postgres_data:/var/lib/postgres/data
+    ports:
+      - "5445:5332"
+    networks:
+      - book
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  
+  auth:
+    container_name: auth-book
+    build: ./
+    depends_on:
+      - postgres-book
+    ports:
+      - "8069:8069"
+    networks:
+      - book
+
+  redis-book:
+    image: redis:latest
+    container_name: redis-book
+    ports:
+      - "6395:6379"
+    networks:
+      - book
+    
+networks:
+  book:
+    driver: bridge
+
+volumes:
+  book_postgres_data: 

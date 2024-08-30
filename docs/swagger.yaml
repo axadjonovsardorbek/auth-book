@@ -1,0 +1,864 @@
+basePath: /
+definitions:
+  auth.GetAllUsersResponse:
+    properties:
+      users:
+        items:
+          $ref: '#/definitions/auth.Users'
+        type: array
+    type: object
+  auth.InfoResponse:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  auth.LogInAdminRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.LoginPublisherRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  auth.ResetPasswordRequest:
+    properties:
+      email:
+        type: string
+      new_password:
+        type: string
+      verification_code:
+        type: string
+    type: object
+  auth.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      expires_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  auth.Users:
+    properties:
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone_number:
+        type: string
+      user_id:
+        type: string
+    type: object
+  helper.SignUpPublisher:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+      username:
+        type: string
+    type: object
+  helper.SwaggerReq:
+    properties:
+      dateOfBirth:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phoneNumber:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Auth service
+  title: Auth service
+  version: "1.0"
+paths:
+  /admin/changePassword:
+    put:
+      consumes:
+      - application/json
+      description: Change password for a user
+      parameters:
+      - description: Current Password
+        in: query
+        name: current_password
+        required: true
+        type: string
+      - description: New Password
+        in: query
+        name: new_password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Change admin's password
+      tags:
+      - Admin
+  /admin/createAdmin/{email}:
+    post:
+      consumes:
+      - application/json
+      description: Allows admins to enter their email address for actions such as
+        account recovery or verification. A verification code will be sent to the
+        provided email.
+      parameters:
+      - description: Admin Email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LogInAdminRequest'
+        "400":
+          description: Invalid input data
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Enter admin email for verification
+      tags:
+      - Admin
+  /admin/deleteAdmin:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the user data
+      parameters:
+      - description: Admin ID
+        in: query
+        name: adminID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Deletes the admin by entered id
+      tags:
+      - Admin
+  /admin/forgetPassword/{email}:
+    post:
+      consumes:
+      - application/json
+      description: Request a password reset email
+      parameters:
+      - description: Admin Email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Initiate password reset
+      tags:
+      - Admin
+  /admin/getAllAdmins:
+    get:
+      consumes:
+      - application/json
+      description: Gets all admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.GetAllUsersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all admins
+      tags:
+      - Admin
+  /admin/getProfile:
+    get:
+      consumes:
+      - application/json
+      description: Gets the all information about the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.Users'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get the profile informations
+      tags:
+      - Admin
+  /admin/loginAdmin:
+    post:
+      consumes:
+      - application/json
+      description: Login as an admin user with email and password
+      parameters:
+      - description: Admin Login Credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LogInAdminRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful login
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Admin Login
+      tags:
+      - Admin
+  /admin/resetPassword:
+    post:
+      consumes:
+      - application/json
+      description: Reset a admin's password using a temporary password
+      parameters:
+      - description: Reset password details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Reset admin password
+      tags:
+      - Admin
+  /admin/updateAdmin:
+    put:
+      consumes:
+      - application/json
+      description: Updates the admin's data
+      parameters:
+      - description: Admin update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/helper.SwaggerReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update the admin
+      tags:
+      - Admin
+  /auth/changeEmail:
+    put:
+      consumes:
+      - application/json
+      description: Change the email address of a user
+      parameters:
+      - description: New Email
+        in: query
+        name: new_email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Change user email
+      tags:
+      - Auth
+  /auth/completeChangeEmail:
+    post:
+      consumes:
+      - application/json
+      description: Verifies a user's email address using a verification code. If successful,
+        returns an authentication token.
+      parameters:
+      - description: User email address
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: Verification code sent to the user's email
+        in: query
+        name: verification_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token generated upon successful verification
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+        "400":
+          description: Invalid input or verification code
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+      security:
+      - BearerAuth: []
+      summary: Verify user email
+      tags:
+      - Authentication
+  /auth/deleteUser:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the user data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Deletes the user
+      tags:
+      - Users
+  /auth/deleteUserByAdmin:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the user data
+      parameters:
+      - description: User ID
+        in: query
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Deletes the user by entered id
+      tags:
+      - Users
+  /auth/enterAccount/{email}:
+    post:
+      consumes:
+      - application/json
+      description: Allows users to enter their email address for actions such as account
+        recovery or verification. A verification code will be sent to the provided
+        email.
+      parameters:
+      - description: User Email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LogInAdminRequest'
+        "400":
+          description: Invalid input data
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Enter user email for verification
+      tags:
+      - Authentication
+  /auth/enterAccountByPhone/{phone}:
+    post:
+      consumes:
+      - application/json
+      description: Allows users to enter their phone address for actions such as account
+        recovery or verification. A verification code will be sent to the provided
+        phone.
+      parameters:
+      - description: User Phone
+        in: path
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LogInAdminRequest'
+        "400":
+          description: Invalid input data
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Enter user phone for verification
+      tags:
+      - Authentication
+  /auth/getAllUsers:
+    get:
+      consumes:
+      - application/json
+      description: Gets all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.GetAllUsersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - Users
+  /auth/getProfile:
+    get:
+      consumes:
+      - application/json
+      description: Gets the all information about the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.Users'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get the profile informations
+      tags:
+      - Users
+  /auth/refreshToken:
+    post:
+      consumes:
+      - application/json
+      description: Refresh a user's access token using the refresh token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Refresh an access token
+      tags:
+      - Auth
+  /auth/updateUser:
+    put:
+      consumes:
+      - application/json
+      description: Updates the user's data
+      parameters:
+      - description: User update data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/helper.SwaggerReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update the user
+      tags:
+      - Users
+  /auth/verifyEmail:
+    post:
+      consumes:
+      - application/json
+      description: Verifies a user's email address using a verification code. If successful,
+        returns an authentication token.
+      parameters:
+      - description: User email address
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: Verification code sent to the user's email
+        in: query
+        name: verification_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token generated upon successful verification
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+        "400":
+          description: Invalid input or verification code
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+      security:
+      - BearerAuth: []
+      summary: Verify user email
+      tags:
+      - Authentication
+  /auth/verifyPhone:
+    post:
+      consumes:
+      - application/json
+      description: Verifies a user's phone address using a verification code. If successful,
+        returns an authentication token.
+      parameters:
+      - description: User phone address
+        in: query
+        name: phone
+        required: true
+        type: string
+      - description: Verification code sent to the user's phone
+        in: query
+        name: verification_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token generated upon successful verification
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+        "400":
+          description: Invalid input or verification code
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+      security:
+      - BearerAuth: []
+      summary: Verify user phone
+      tags:
+      - Authentication
+  /publisher/LogInPublisher:
+    post:
+      consumes:
+      - application/json
+      description: Login as an publisher user with email and password
+      parameters:
+      - description: Publisher email address or username
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: The password to log in
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful login
+          schema:
+            $ref: '#/definitions/auth.LoginPublisherRequest'
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Publisher Login
+      tags:
+      - Publisher
+  /publisher/SignUpPublisher:
+    post:
+      consumes:
+      - application/json
+      description: Sign Up Publisher
+      parameters:
+      - description: Sign Up details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/helper.SignUpPublisher'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: SignUp Publisher
+      tags:
+      - Publisher
+  /publisher/VerifyPublisherEmail:
+    post:
+      consumes:
+      - application/json
+      description: Verifies a publisher's email address using a verification code.
+        If successful, returns an authentication token.
+      parameters:
+      - description: Publisher email address
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: Verification code sent to the publisher's email
+        in: query
+        name: verification_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token generated upon successful verification
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+        "400":
+          description: Invalid input or verification code
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/auth.InfoResponse'
+      security:
+      - BearerAuth: []
+      summary: Verify publisher email
+      tags:
+      - Publisher
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

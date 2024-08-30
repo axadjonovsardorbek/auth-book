@@ -1,0 +1,164 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "/auth";
+
+service AuthService {
+    // Phone
+    rpc EnterAccountByPhone(PhoneRequest) returns (InfoResponse);
+    rpc VerifyPhone(VerifyPhoneRequest) returns (TokenResponse);
+
+    // Auth
+    rpc EnterAccount(EmailRequest) returns (InfoResponse);
+    rpc VerifyEmail(VerifyEmailRequest) returns (TokenResponse);
+    rpc RefreshToken(ById) returns (TokenResponse);
+    rpc ChangeEmail(ChangeEmailRequest) returns (InfoResponse);
+    rpc CompleteChangeEmail(VerifyEmailRequest) returns (TokenResponse);
+    
+    // User Manage
+    rpc UpdateUser(UpdateUserRequest) returns (InfoResponse);
+    rpc GetProfile(ById) returns (Users);
+    rpc GetAllUsers(ById) returns (GetAllUsersResponse);
+    rpc DeleteUser(ById) returns (InfoResponse);
+    rpc DeleteUserByAdmin(ByAdmin) returns (InfoResponse); 
+
+    // Admin Manage
+    rpc CreateAdmin(EmailRequest) returns (LogInAdminRequest);
+    rpc LogInAdmin(LogInAdminRequest) returns (TokenResponse);
+    rpc UpdateAdmin(UpdateUserRequest) returns (InfoResponse);
+    rpc ChangePassword(ChangePasswordRequest) returns (InfoResponse);
+    rpc ForgetPassword(EmailRequest) returns (InfoResponse);
+    rpc ResetPassword(ResetPasswordRequest) returns (InfoResponse);
+    rpc DeleteAdmin(BySuperAdmin) returns (InfoResponse);
+    rpc GetAdmin(ById) returns (Users);
+    rpc GetAllAdmins(ById) returns (GetAllUsersResponse); 
+
+    // Publisher
+    rpc SignUpPublisher(SignUpPublisherRequest) returns (InfoResponse);
+    rpc VerifyPublisherEmail(VerifyPublisherEmailRequest) returns (TokenResponse);
+    rpc LogInPublisher(LoginPublisherRequest) returns (TokenResponse);
+}
+
+message VerifyPublisherEmailRequest{
+    string publisher_id = 1;
+    string name = 2;
+    string email = 3;
+    string password = 4;
+    string phone_number = 5;
+    string username = 6;
+    string img_url = 7;
+    string role = 8;
+}
+
+message LoginPublisherRequest{
+    string username = 1;
+    string password = 2;
+}
+
+message SignUpPublisherRequest{
+    string name = 1;
+    string email = 2;
+    string password = 3;
+    string phone_number = 4;
+    string username = 5;
+    string img_url = 6;
+    string role = 7;
+}
+
+message PhoneRequest{
+    string user_id = 1;
+    string phone = 2;
+    string role = 3;
+    string super_admin_id = 4;
+}
+
+message VerifyPhoneRequest{
+    string user_id = 1;
+    string phone = 2;
+    string verification_code = 3;
+    string role = 4;
+}
+
+message ResetPasswordRequest {
+    string email = 1;
+    string verification_code = 2;
+    string new_password = 3;
+}
+
+message ChangePasswordRequest {
+    string user_id = 1;
+    string old_password = 2;
+    string new_password = 3;
+}
+
+message BySuperAdmin{
+    string super_admin_id = 1;
+    string admin_id = 2;
+}
+
+message LogInAdminRequest{
+    string email = 1;
+    string password = 2;
+}
+
+message ByAdmin{
+    string admin_id = 1;
+    string user_id = 2;
+}
+
+message VerifyEmailRequest{
+    string user_id = 1;
+    string email = 2;
+    string verification_code = 3;
+    string role = 4;
+}
+
+message UpdateUserRequest{
+    string user_id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string email = 4;
+    string phone_number = 5;
+    string date_of_birth = 6;
+}
+
+message GetAllUsersResponse {
+    repeated Users users = 1;
+}
+
+message ById{
+    string user_id = 1;
+}
+
+message ChangeEmailRequest {
+    string current_email = 1;
+    string new_email = 2;
+}
+
+message EmailRequest {
+    string admin_id = 1;
+    string email = 2;
+    string role = 3;
+    string super_admin_id = 4;
+}
+
+message TokenResponse {
+    string user_id = 1;
+    string access_token = 2;
+    string expires_at = 3;
+}
+
+message Users {
+    string user_id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string email = 4;
+    string phone_number = 5;
+    string date_of_birth = 6;
+}
+
+message InfoResponse {
+    string message = 1;   
+    bool success = 2;
+}
