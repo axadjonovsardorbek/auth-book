@@ -65,7 +65,7 @@ func NewGin(h *handler.Handler) *gin.Engine {
 		auth.DELETE("/deleteUserByAdmin", h.DeleteUserByAdmin)
 	}
 
-	swaggerURL := ginSwagger.URL("http://localhost:8080/swagger/doc.json")
+	swaggerURL := ginSwagger.URL("http://3.68.216.185:8069/swagger/doc.json")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(files.Handler, swaggerURL))
 
 	return r
