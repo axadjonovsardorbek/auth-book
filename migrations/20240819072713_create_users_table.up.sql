@@ -85,6 +85,6 @@ EXECUTE FUNCTION update_updated_at_column();
 
 
 
-INSERT INTO users (id, first_name, last_name, email, phone_number, password, date_of_birth, role, created_at, updated_at, deleted_at)
+INSERT INTO admins (id, first_name, last_name, email, phone_number, password, date_of_birth, role, created_at, updated_at, deleted_at)
 VALUES
     ('f3b1e5c0-3e6f-11ed-b878-0242ac120002', 'Sardorbek', 'Axadjonov', 'axadjonovsardorbeck@gmail.com', '+998200070424', '$2a$10$DCHM3DqLWoA.lgdqM7Tkk.Qdq/OHMkBq5DaM6TCYpQQKmdF7tmfQW', '2007-04-24', 'super_admin', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0);
